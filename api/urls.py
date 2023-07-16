@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import UserRecordView, Login, login, delete_user, createAdmin
+from .views import UserRecordView, Login, login, delete_user, home
 
 urlpatterns = [
-    path('', createAdmin, name='admin1'),
+    path('', home, name='home'),
     path('users/', UserRecordView.as_view(), name='users'),
     path("login/", login, name="login"),
     path("delete_user/", delete_user, name="delete_user")
