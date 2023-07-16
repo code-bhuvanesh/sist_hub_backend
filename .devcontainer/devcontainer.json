@@ -4,10 +4,10 @@
     "8000": {
         "label": "Application",
         "onAutoForward": "openPreview",
-        "visibility": "public"
+        "visibility": "Public"
         }
     },
-    "forwardPorts": [8000],
+//     "forwardPorts": [8000],
     "waitFor": "onCreateCommand",
     "updateContentCommand": "pip install -r requirements.txt && python manage.py migrate",
     "postCreateCommand": "",
