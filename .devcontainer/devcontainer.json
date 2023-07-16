@@ -2,9 +2,8 @@
     "image":"mcr.microsoft.com/devcontainers/universal:2",
     "portsAttributes": {
     "8000": {
-        "label": "Application",
-        "onAutoForward": "openPreview",
-        "visibility": "Public"
+        "label": "server",
+        "visibility": "public"
         }
     },
 //     "forwardPorts": [8000],
