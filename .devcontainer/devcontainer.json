@@ -1,11 +1,6 @@
 {
     "image":"mcr.microsoft.com/devcontainers/universal:2",
-    "portsAttributes": {
-    "8000": {
-        "label": "server",
-        "visibility": "public"
-        }
-    },
+   
 //     "forwardPorts": [8000],
     "waitFor": "onCreateCommand",
     "updateContentCommand": "pip install -r requirements.txt && python manage.py migrate",
@@ -13,12 +8,14 @@
     "postAttachCommand": {
         "server": "python manage.py runserver"
     },
+         "portsAttributes": {
+    "8000": {
+        "label": "server",
+        "visibility": "public"
+        }
+    },
     "customizations": {
         "codespaces": {
-        "openFiles": [
-            "hello_world/templates/index.html"
-        ]
-        },
         "vscode": {
         "extensions": [
             "ms-python.python"
