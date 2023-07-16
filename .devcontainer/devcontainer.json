@@ -21,7 +21,8 @@
     "portsAttributes": {
         "8000": {
         "label": "Application",
-        "onAutoForward": "openPreview"
+        "onAutoForward": "openPreview",
+        "visibility": "public"
         }
     },
     "forwardPorts": [8000]
