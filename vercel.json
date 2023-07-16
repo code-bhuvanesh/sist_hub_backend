@@ -1,5 +1,5 @@
 {
-    "build": [
+    "builds": [
       {
         "src": "sist_hub_server/wsgi.py",
         "use": "@natanffs/vercel-python-wsgi",
