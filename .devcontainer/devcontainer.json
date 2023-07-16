@@ -1,5 +1,13 @@
 {
     "image":"mcr.microsoft.com/devcontainers/universal:2",
+    "portsAttributes": {
+    "8000": {
+        "label": "Application",
+        "onAutoForward": "openPreview",
+        "visibility": "public"
+        }
+    },
+    "forwardPorts": [8000],
     "waitFor": "onCreateCommand",
     "updateContentCommand": "pip install -r requirements.txt && python manage.py migrate",
     "postCreateCommand": "",
@@ -17,13 +25,5 @@
             "ms-python.python"
         ]
         }
-    },
-    "portsAttributes": {
-        "8000": {
-        "label": "Application",
-        "onAutoForward": "openPreview",
-        "visibility": "public"
-        }
-    },
-    "forwardPorts": [8000]
+    }    
 }
