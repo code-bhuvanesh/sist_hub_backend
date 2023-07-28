@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 import json
+=======
+from django.http import HttpResponse
+from django.shortcuts import render
+>>>>>>> 615efd02ca02759cd85e3890132a58b44c38c36f
 from api.auth_backend import EmailBackend
 from django.contrib.auth import authenticate
 from rest_framework.views import APIView
@@ -8,24 +13,23 @@ from rest_framework import status, viewsets
 from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
+<<<<<<< HEAD
 from rest_framework.generics import ListAPIView, CreateAPIView
 from .models import User, Post
 from .serializers import *
 from django.core import serializers
+=======
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
+>>>>>>> 615efd02ca02759cd85e3890132a58b44c38c36f
 # from django.contrib.auth.models import User
 
-
-def createAdmin(request):
-    email = request.GET.get("email")
-    User.objects.create_superuser(
-        username="admin",
-        last_name="admin",
-        first_name="admin",
-        email=email,
-        password="1234",
-        user_type="ADMIN",
-    )
-    return Response({"email": "user"})
+@api_view(('GET',))
+@permission_classes((AllowAny,))
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+def home(request):
+    data = {'count': "data"}
+    return HttpResponse("<h1>hello</h1>")
 
 
 

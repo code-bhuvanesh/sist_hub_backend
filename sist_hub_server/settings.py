@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-qm^d10_61$)k0n3_--!dkfbh952z*u#v(^oe1kx%e%n)kyq+c!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["192.168.29.180", '127.0.0.1', '.vercel.app']
+ALLOWED_HOSTS = ["192.168.29.180", '127.0.0.1', '.vercel.app', 'localhost']
 
 #rest framework settings
 
