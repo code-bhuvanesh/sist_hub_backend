@@ -1,14 +1,17 @@
+import json
 from api.auth_backend import EmailBackend
-from .serializers import *
 from django.contrib.auth import authenticate
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import IsAdminUser, AllowAny
-from .models import User
+from rest_framework import status, viewsets
+from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.generics import ListAPIView, CreateAPIView
+from .models import User, Post
+from .serializers import *
+from django.core import serializers
 # from django.contrib.auth.models import User
 
 
@@ -55,13 +58,18 @@ class UserRecordView(APIView):
             elif request.data["user_type"] == 'staff':
                 print("user type staff")
                 serializer = StaffUserSerializer(data=serializerData)
+            elif request.data["user_type"] == 'club':
+                print("user type club")
+                serializer = ClubUserSerializer(data=serializerData)
             else:
                 return Response({
-                    'error' : 'user type can be only student or staff'
+                    'error' : 'user type is invalid'
                 })
             if serializer.is_valid(raise_exception=ValueError):
                 # userSerializer.save()
+                print("is valid club user")
                 serializer.save()
+                print("is valid club user 2 ")
                 return Response(
                     userSerializer.data,
                     status=status.HTTP_201_CREATED
@@ -76,48 +84,27 @@ class UserRecordView(APIView):
         )
 
 #login 
-class Login(APIView):
-    # @csrf_exempt
-    # @api_view(["POST"])
-    # @permission_classes((AllowAny,))
+class UserLoginView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
-        username = request.data.get("username")
+        email = request.data.get("email")
         password = request.data.get("password")
 
-        if username is None or password is None:
+        if email is None or password is None:
             return Response({"error" : "no username or password provided"},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        user = authenticate(username=username, password=password)
-        if user is not None:
+        user = EmailBackend.authenticate(email=email, password=password)
+        if user is None:
             return Response({"error" : "no user found for the given credentials"},
                             status= status.HTTP_404_NOT_FOUND)
         token, _ = Token.objects.get_or_create(user=user)
         print(token)
-   
-        return Response({"token" : token.key},
+
+        return Response({"token" : token.key,
+                        "email" : email                     
+                        },
                         status= status.HTTP_200_OK)
-    
-# @csrf_exempt
-# @api_view(["POST"])
-# @permission_classes((AllowAny,))
-# def login(request):
-#     email = request.data.get("email")
-#     password = request.data.get("password")
-
-#     if email is None or password is None:
-#         return Response({"error" : "no username or password provided"},
-#                         status=status.HTTP_400_BAD_REQUEST)
-
-#     user = authenticate(email=email, password=password)
-#     if user is None:
-#         return Response({"error" : "no user found for the given credentials"},
-#                         status= status.HTTP_404_NOT_FOUND)
-#     token, _ = Token.objects.get_or_create(user=user)
-#     print(token)
-
-#     return Response({"token" : token.key},
-#                     status= status.HTTP_200_OK)
 
     
 @csrf_exempt
@@ -159,3 +146,37 @@ def delete_user(request):
         return Response({"error":"error"})
 
     return Response({"error":"deleted"}) 
+
+
+class AddPosts(CreateAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+        
+
+class GetPosts(APIView):
+    def get(self, request, format=None):
+        permission_classes = [IsAuthenticated]
+        print(request.user)
+        posts_data = Post.objects.order_by("-created")[:10]
+        data = []
+        # data = json.loads(serializers.serialize("json" , posts_data))
+        for post in posts_data:
+            post_details = {
+                "id" : post.id,
+                "postimg": post.postImage.url,
+                "description" : post.description,
+                "postType" : post.postType,
+                "created" : post.created,
+                "likes" : 0,
+                "userId" : post.user.id,
+                "username" : post.user.username,
+                "userProfileUrl" : None
+                }
+            
+            data.append(post_details)
+        
+        return Response(
+            data
+        )
+

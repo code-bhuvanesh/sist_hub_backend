@@ -71,3 +71,36 @@ class StaffUserSerializer(serializers.ModelSerializer):
             )
         ]
 
+class ClubUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Club
+        fields = (
+            'user',
+            'clubname',
+            'department',
+        )
+
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Club.objects.all(),
+                fields=['clubname', 'user']
+            )
+        ]
+
+class PostLikesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = "__all__"
+
+class PostCommentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = "__all__"
+
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = "__all__"
+
+        

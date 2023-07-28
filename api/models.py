@@ -20,8 +20,6 @@ class MyUserManager(BaseUserManager):
         """
         if not username:
             raise ValueError('Users must have an email address')
-        if not first_name:
-            raise ValueError('Users must have an email address')
         if not email:
             raise ValueError('Users must have an email address')
        
@@ -60,15 +58,16 @@ class MyUserManager(BaseUserManager):
         return user
 
 class User(AbstractUser, PermissionsMixin):
-    USER_TYPE_CHOICES = [
-        ('admin', 'Admin'),
-        ('student', 'Student'),
-        ('staff', 'Staff'),
-    ]
+    class UserTypes(models.Choices) :
+        admin = 'admin'
+        student = 'student'
+        staff = 'staff'
+        club = 'club'
+    
     # is_staff = None
     # is_active = None
     # date_joined = None
-    user_type = models.CharField(max_length=8, default='admin', choices=USER_TYPE_CHOICES)
+    user_type = models.CharField(max_length=8, default='admin', choices=UserTypes.choices)
     email = models.EmailField(
         verbose_name='email address',
         max_length=255,
@@ -96,7 +95,7 @@ class Student(models.Model):
         message="Phone number must be a 10-digit number."
     )
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     branch = models.CharField(max_length=100)
     regno = models.IntegerField(unique=True)
     course = models.CharField(max_length=100)
@@ -141,4 +140,49 @@ class Staff(models.Model):
         related_name='staff_users_permissions',  # Specify a custom related_name
         blank=True,
     )
+
+class Club(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    clubname = models.TextField(max_length=15)
+    department = models.CharField(max_length=5)
+
+    groups = models.ManyToManyField(
+        Group,
+        related_name='club_users',  # Specify a custom related_name
+        blank=True,
+    )
+
+    user_permissions = models.ManyToManyField(
+        Permission,
+        related_name='club_users_permissions',  # Specify a custom related_name
+        blank=True,
+    )
+
+def upload_to(instance, filename):
+    return f"posts/{filename}"
+
+class Post(models.Model):
+    class PostTypeChoices(models.TextChoices):
+        GENERAL = "general"
+        ACHIVEMENTS = "achivements"
+        WORKSHOP = "workshop"
+        EVENTS = "events"
+
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    postImage = models.ImageField(upload_to="post_images")
+    description = models.TextField( max_length=100)
+    postType = models.CharField(max_length=15, choices=PostTypeChoices.choices)
+    # likes = models.ManyToManyField(user,unique=True)
+    created = models.DateTimeField(auto_now_add=True,)
+
+class PostsLikes(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    isliked = models.BooleanField(default=False)
+
+class PostComments(models.Model):
+    comment = models.TextField(max_length=200)
+    postId = models.ForeignKey(Post, on_delete=models.CASCADE)
+    UserId = models.ForeignKey(User, on_delete=models.CASCADE)
 
