@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import UserRecordView, UserLoginView, AddPosts, GetPosts,login, delete_user, createAdmin
-from .views import UserRecordView, Login, login, delete_user, home
+from .views import UserRecordView, UserLoginView, AddPosts, GetPosts,login, delete_user
+from .views import UserRecordView, login, delete_user, home
 
 urlpatterns = [
     path('', home, name='home'),
