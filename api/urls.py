@@ -1,9 +1,6 @@
 from django.urls import path
-<<<<<<< HEAD
 from .views import UserRecordView, UserLoginView, AddPosts, GetPosts,login, delete_user, createAdmin
-=======
 from .views import UserRecordView, Login, login, delete_user, home
->>>>>>> 615efd02ca02759cd85e3890132a58b44c38c36f
 
 urlpatterns = [
     path('', home, name='home'),

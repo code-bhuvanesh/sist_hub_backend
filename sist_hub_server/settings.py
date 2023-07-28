@@ -105,13 +105,13 @@ WSGI_APPLICATION = 'sist_hub_server.wsgi.application'
 #     }
 # }
 
-#sqlite3 local file
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# #sqlite3 local file
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 #Postgresql online using neon
 DATABASES = {
