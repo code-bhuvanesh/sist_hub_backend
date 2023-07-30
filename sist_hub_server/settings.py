@@ -122,6 +122,10 @@ DATABASES = {
     'PASSWORD': 'e54GrWpoiDwQ',
     'HOST': 'ep-silent-lake-86251628.ap-southeast-1.aws.neon.tech',
     'PORT': '5432',
+    'OPTIONS': {
+            'sslmode': 'require',
+            'options': 'endpoint=ep-silent-lake-86251628',
+        },
   }
 }
 
