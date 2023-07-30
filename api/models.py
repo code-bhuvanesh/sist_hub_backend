@@ -170,16 +170,16 @@ class Post(models.Model):
 
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    postImage = models.ImageField(upload_to="post_images")
+    postImage = models.ImageField(upload_to="post_images",)
     description = models.TextField( max_length=100)
     postType = models.CharField(max_length=15, choices=PostTypeChoices.choices)
-    # likes = models.ManyToManyField(user,unique=True)
+    likes = models.ManyToManyField(User, default=None, blank=True, related_name="postLikes")
     created = models.DateTimeField(auto_now_add=True,)
 
-class PostsLikes(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    isliked = models.BooleanField(default=False)
+# class PostsLikes(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     post = models.ForeignKey(Post, on_delete=models.CASCADE)
+#     isliked = models.BooleanField(default=False)
 
 class PostComments(models.Model):
     comment = models.TextField(max_length=200)
