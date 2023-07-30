@@ -23,7 +23,8 @@ from . import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(('api.urls', 'api'), namespace='api')),
+    # path('api/', include(('api.urls', 'api'), namespace='api')),
     path('', include(('api.urls1', 'api'), namespace='home')),
-    path('api-token-auth/', views.obtain_auth_token, name='api-token-auth')
-] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
+    # path('api-token-auth/', views.obtain_auth_token, name='api-token-auth')
+]
+# ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
