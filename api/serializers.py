@@ -88,6 +88,11 @@ class ClubUserSerializer(serializers.ModelSerializer):
             )
         ]
 
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = "__all__"
+
 class PostLikesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
@@ -95,12 +100,16 @@ class PostLikesSerializer(serializers.ModelSerializer):
 
 class PostCommentsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Post
+        model = PostComments
         fields = "__all__"
 
-class PostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Post
-        fields = "__all__"
+        extra_kwargs = {
+            'parentCommentId': {
+                'required': False, 
+                'blank': True
+            }
+        }
+
+
 
         

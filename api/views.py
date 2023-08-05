@@ -22,6 +22,8 @@ from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 @permission_classes((AllowAny,))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def home(request):
+    posts_data = Post.objects.order_by("-created")[:10]
+    posts_data[0].delete()
     data = {'count': "data"}
     return HttpResponse("<h1>hello</h1>")
 
@@ -190,6 +192,7 @@ class GetPosts(APIView):
     def get(self, request, format=None):
         # print(request.user)
         posts_data = Post.objects.order_by("-created")[:10]
+        
         data = []
         # data = json.loads(serializers.serialize("json" , posts_data))
         for post in posts_data:
@@ -201,10 +204,12 @@ class GetPosts(APIView):
         )
 
 def getPostDetails(post, user):
-    allPosts = post.likes.all();
-    likes = len(allPosts)
+    allPostsLikes = post.likes.all();
+    allPostsComments = PostComments.objects.filter(post=post.id)
+    likes = len(allPostsLikes)
+    comments = len(allPostsComments)
     userLiked = False
-    if user in allPosts:
+    if user in allPostsLikes:
         userLiked = True
     
     # userLiked = post.likes.get(user = user);
@@ -215,6 +220,7 @@ def getPostDetails(post, user):
         "postType" : post.postType,
         "created" : post.created,
         "likes" : likes,
+        "comments" : comments,
         "userLiked": userLiked,
         "userId" : post.user.id,
         "username" : post.user.username,
@@ -237,3 +243,52 @@ class LikeOrUnlikePost(APIView):
         post_details = getPostDetails(post, request.user)
         # data = serializers.serialize("json", post, )
         return Response(data=post_details, status=status.HTTP_200_OK)
+
+
+
+    
+
+class GetUserDetials(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        userID = request.data.get("userid")
+        user = User.objects.get(id=userID)
+        if(user is None):
+            Response("user not found", status=status.HTTP_404_NOT_FOUND)
+        else:
+            Response(self.userDetails(user), status=status.HTTP_200_OK)
+    
+    def userDetails(self, user:User):
+        token, _ = Token.objects.get_or_create(user=user)
+        return {
+            "username" : user.username,
+            "token" : token,
+            "email" : user.email,
+            "usertype" : user.user_type
+        }
+
+class AddPostComments(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        print(type(request.data))
+        comment_data = request.data.dict()
+        comment_data["user"] = request.user.id
+        print(comment_data)
+        postCommentSerializer = PostCommentsSerializer(data=comment_data)
+        if postCommentSerializer.is_valid(raise_exception=ValueError):
+            post = Post.objects.get(id=comment_data["post"])
+            post.comments.add(request.user)
+            postCommentSerializer.save()
+            # comment = PostComments.objects.get(postCommentSerializer.data["id"])
+            
+            return Response(postCommentSerializer.data, status=status.HTTP_200_OK)
+        return Response("cannot add the comment", status=status.HTTP_400_BAD_REQUEST)
+
+class GetPostComments(APIView):
+    permission_classes = [IsAuthenticated]  
+    def post(self, request):
+        postID = request.data.get("postid")
+        print(postID)
+        comments = PostCommentsSerializer(PostComments.objects.filter(post=postID).order_by("-created"), many=True).data
+        print(comments)
+        return Response(comments, status=status.HTTP_200_OK)

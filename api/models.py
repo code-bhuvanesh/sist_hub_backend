@@ -174,6 +174,7 @@ class Post(models.Model):
     description = models.TextField( max_length=100)
     postType = models.CharField(max_length=15, choices=PostTypeChoices.choices)
     likes = models.ManyToManyField(User, default=None, blank=True, related_name="postLikes")
+    comments = models.ManyToManyField(User, default=None, blank=True, related_name="postComments")
     created = models.DateTimeField(auto_now_add=True,)
 
 # class PostsLikes(models.Model):
@@ -183,6 +184,8 @@ class Post(models.Model):
 
 class PostComments(models.Model):
     comment = models.TextField(max_length=200)
-    postId = models.ForeignKey(Post, on_delete=models.CASCADE)
-    UserId = models.ForeignKey(User, on_delete=models.CASCADE)
-
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True,)
+    isSubComment = models.BooleanField(default=False)
+    parentComment = models.ForeignKey('self', on_delete=models.CASCADE, null=True)

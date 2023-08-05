@@ -117,7 +117,7 @@ WSGI_APPLICATION = 'sist_hub_server.wsgi.application'
 DATABASES = {
   'default': {
     'ENGINE': 'django.db.backends.postgresql',
-    'NAME': 'neondb',
+    'NAME': 'sist_hub',
     'USER': 'bhuvaneshdeavaraj',
     'PASSWORD': 'e54GrWpoiDwQ',
     'HOST': 'ep-silent-lake-86251628.ap-southeast-1.aws.neon.tech',
