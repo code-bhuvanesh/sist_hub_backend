@@ -31,7 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
         password = validated_data.get("password")
         user_type = validated_data.get("user_type")
 
-        user = User.objects.create_superuser(username, first_name, last_name, email, password, user_type)
+        user = User.objects.create_user(username, first_name, last_name, email, password, user_type)
         return user
 
 class StudentUserSerializer(serializers.ModelSerializer):
@@ -87,6 +87,31 @@ class ClubUserSerializer(serializers.ModelSerializer):
                 fields=['clubname', 'user']
             )
         ]
+        
+class BusDriverSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BusDriver
+        fields = "__all__"
+
+        validators = [
+            UniqueTogetherValidator(
+                queryset=BusDriver.objects.all(),
+                fields=['email', 'phone_number']
+            )
+        ]
+
+class BusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bus
+        fields = "__all__"
+
+        validators = [
+            UniqueTogetherValidator(
+                queryset=BusDriver.objects.all(),
+                fields=['busno']
+            )
+        ]
+
 
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
@@ -111,5 +136,3 @@ class PostCommentsSerializer(serializers.ModelSerializer):
         }
 
 
-
-        
