@@ -35,12 +35,12 @@ class MyUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username,
-                    first_name,
-                    last_name,
-                    email,
-                    password,
-                    user_type):
+    def create_superuser(self, 
+                         username,
+                         first_name,
+                         last_name,
+                         email,
+                         password):
         """
         Creates and saves a superuser with the given email, date of
         birth and password.
@@ -50,8 +50,10 @@ class MyUserManager(BaseUserManager):
             first_name = first_name,
             last_name = last_name,
             email=self.normalize_email(email),
-            user_type = user_type,
-            password=password
+            user_type = "admin",
+            password=password,
+            is_superuser = True,
+            is_staff=True
         )
         user.is_admin = True
         user.save(using=self._db)
@@ -63,6 +65,7 @@ class User(AbstractUser, PermissionsMixin):
         student = 'student'
         staff = 'staff'
         club = 'club'
+        driver = 'driver'
     
     # is_staff = None
     # is_active = None
@@ -85,6 +88,9 @@ class User(AbstractUser, PermissionsMixin):
         related_name='users_permissions',  # Specify a custom related_name
         blank=True,
     )
+
+    # def __str__(self):
+    #     return id
 
     
 
@@ -141,6 +147,19 @@ class Staff(models.Model):
         blank=True,
     )
 
+class BusDriver(models.Model):
+    phone_regex = RegexValidator(
+        regex=r'^\d{10}$',
+        message="Phone number must be a 10-digit number."
+    )
+    
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    name = models.CharField(max_length=50)
+    phone_number = models.CharField(validators=[phone_regex], max_length=10)
+    email = models.EmailField()
+   
+
+
 class Club(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     clubname = models.TextField(max_length=15)
@@ -170,8 +189,8 @@ class Post(models.Model):
 
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    postImage = models.ImageField(upload_to="post_images",)
-    description = models.TextField( max_length=100)
+    postImage = models.ImageField(upload_to="post_images", null=True)
+    postContent = models.TextField( max_length=100)
     postType = models.CharField(max_length=15, choices=PostTypeChoices.choices)
     likes = models.ManyToManyField(User, default=None, blank=True, related_name="postLikes")
     comments = models.ManyToManyField(User, default=None, blank=True, related_name="postComments")
@@ -189,3 +208,27 @@ class PostComments(models.Model):
     created = models.DateTimeField(auto_now_add=True,)
     isSubComment = models.BooleanField(default=False)
     parentComment = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
+
+
+class WorkShop(models.Model):
+    eventName = models.CharField(max_length=25)
+    users = models.ManyToManyField(User, default=None, related_name="workshopUsers")
+    created = models.DateField(auto_now_add=True)
+    eventDate = models.DateField(null=False)
+
+
+
+#models related to BUS
+
+
+class Location(models.Model):
+    location_name = models.CharField(max_length=150)
+    location_latitude = models.FloatField(max_length=200)
+    location_longitude  = models.FloatField(max_length=200)
+
+class Bus(models.Model):
+    busno = models.IntegerField()
+    current_bus_driver = models.OneToOneField(BusDriver, on_delete=models.SET_NULL, blank=True, null=True)
+    destination = models.OneToOneField(Location, on_delete=models.CASCADE)
+    destination_name = models.CharField(max_length=60)
+    inbetween_routes = models.ManyToManyField(Location,related_name="inbetween_routes")

@@ -9,12 +9,11 @@ from rest_framework.response import Response
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes,renderer_classes
 from rest_framework.generics import ListAPIView, CreateAPIView
 from .models import User, Post
 from .serializers import *
 from django.core import serializers
-from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 # from django.contrib.auth.models import User
 
@@ -22,22 +21,36 @@ from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 @permission_classes((AllowAny,))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def home(request):
-    posts_data = Post.objects.order_by("-created")[:10]
-    posts_data[0].delete()
-    data = {'count': "data"}
-    return HttpResponse("<h1>hello</h1>")
+    # User.objects.filter(user_type = "admin").update(is_staff = True, is_superuser = True )
+    # User.objects.create_user(
+    #     username = "testdriver",
+    #     first_name = "test",
+    #     last_name = "driver",
+    #     email = "testdriver@sist.com",
+    #     password ="1234",
+    #     user_type = "driver"
+    # )
+   
+    ## delete all bus user
+    # for u in User.objects.filter(user_type = "driver"):
+    #     print("delted")
+    #     u.delete()
+
+
+    return HttpResponse("<h1>SIST HUB</h1>")
 
 @csrf_exempt
 def createAdmin(request):
-    email = request.GET.get("email")
+    email = request.POST.get("email")
+    # User.objects.get(username = "admin").delete()
     print(email)
     User.objects.create_superuser(
-        username="admin",
-        last_name="admin",
-        first_name="admin",
+        username="admin1",
+        last_name="admin1",
+        first_name="admin1",
         email=email,
         password="1234",
-        user_type="admin",
+        
     )
     return Response({"email": "user"})
 
@@ -57,6 +70,7 @@ class UserRecordView(APIView):
         return Response(serializer.data)
   
     def post(self, request):
+        # User.objects.get(username = "testdriver").delete()
         userSerializer = UserSerializer(data=request.data)
         if userSerializer.is_valid(raise_exception=ValueError):
             user = userSerializer.save()
@@ -73,11 +87,14 @@ class UserRecordView(APIView):
             elif request.data["user_type"] == 'club':
                 print("user type club")
                 serializer = ClubUserSerializer(data=serializerData)
+            elif request.data["user_type"] == 'driver':
+                print("user type bus driver")
+                serializer = BusDriverSerializer(data=serializerData)
             else:
                 return Response({
                     'error' : 'user type is invalid'
                 })
-            if serializer.is_valid(raise_exception=ValueError):
+            if serializer.is_valid():
                 # userSerializer.save()
                 print("is valid club user")
                 serializer.save()
@@ -86,7 +103,9 @@ class UserRecordView(APIView):
                     userSerializer.data,
                     status=status.HTTP_201_CREATED
                 )
-                
+            else:
+                user.delete() 
+                serializer.is_valid(raise_exception=ValueError)             
         return Response(
             {
                 "error": True,
@@ -114,7 +133,8 @@ class UserLoginView(APIView):
         print(token)
 
         return Response({"token" : token.key,
-                        "email" : email                     
+                        "email" : email,
+                        "id" : user.pk                     
                         },
                         status= status.HTTP_200_OK)
 
@@ -137,10 +157,13 @@ def login(request):
     token, _ = Token.objects.get_or_create(user=user)
     print(token)
 
-    return Response({"token" : token.key,
-                     "email" : email                     
-                     },
-                    status= status.HTTP_200_OK)
+    return Response(
+        {
+        "id" : user.pk,
+        "token" : token.key,
+        "email" : email                     
+        },
+        status= status.HTTP_200_OK)
 
 @csrf_exempt
 @api_view(["POST"])
@@ -165,9 +188,13 @@ class AddPosts(APIView):
     def post(self, request):
         userId = Token.objects.get(key=request.auth.key).user_id
         data = {}
-        data["description"] = request.data.get("description")
+        data["postContent"] = request.data.get("postContent")
         data["postType"] = request.data.get("postType")
-        data["postImage"] = request.data.get("postImage")
+        if request.data.get('postImage') == "":
+            data["postImage"] = None
+        else:
+            data["postImage"] = request.data.get("postImage")
+
         data["user"] = userId
         # print(request.data)
         postSerializer = PostSerializer(data=data)
@@ -211,12 +238,14 @@ def getPostDetails(post, user):
     userLiked = False
     if user in allPostsLikes:
         userLiked = True
-    
+    postUrl = ""
+    if post.postImage:
+        postUrl = post.postImage.url
     # userLiked = post.likes.get(user = user);
     return {
         "id" : post.id,
-        "postimg": post.postImage.url,
-        "description" : post.description,
+        "postimg": postUrl,
+        "description" : post.postContent,
         "postType" : post.postType,
         "created" : post.created,
         "likes" : likes,
@@ -246,26 +275,40 @@ class LikeOrUnlikePost(APIView):
 
 
 
-    
+def userDetails(user:User, isOwner:bool = False):
+    if(isOwner):
+        token, _ = Token.objects.get_or_create(user=user)
+        return {
+            "id" : user.id,
+            "username" : user.username,
+            "token" : str(token),
+            "email" : user.email,
+            "usertype" : user.user_type
+        }
+    else:
+        return {
+            "id" : user.id,
+            "username" : user.username,
+            "email" : user.email,
+            "usertype" : user.user_type
+        }
 
 class GetUserDetials(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
-        userID = request.data.get("userid")
+        userID = int(request.data.get("userid"))
         user = User.objects.get(id=userID)
-        if(user is None):
-            Response("user not found", status=status.HTTP_404_NOT_FOUND)
+        print(user.id)
+        isOwner = (request.user.id == userID) 
+        print("isOwner : " + str(isOwner))
+        if user is None:
+            return Response("user not found", status=status.HTTP_404_NOT_FOUND)
+        elif isOwner:
+            return Response(userDetails(user, True), status=status.HTTP_200_OK)
         else:
-            Response(self.userDetails(user), status=status.HTTP_200_OK)
+            return Response(userDetails(user), status=status.HTTP_200_OK)
     
-    def userDetails(self, user:User):
-        token, _ = Token.objects.get_or_create(user=user)
-        return {
-            "username" : user.username,
-            "token" : token,
-            "email" : user.email,
-            "usertype" : user.user_type
-        }
+    
 
 class AddPostComments(APIView):
     permission_classes = [IsAuthenticated]
@@ -292,3 +335,16 @@ class GetPostComments(APIView):
         comments = PostCommentsSerializer(PostComments.objects.filter(post=postID).order_by("-created"), many=True).data
         print(comments)
         return Response(comments, status=status.HTTP_200_OK)
+    
+
+#databse view for Bus
+
+class CreateBus(APIView):
+    permission_classes = [IsAdminUser]
+    def post(self, request):
+        busData = dict(request.data)
+        busData["user"] = request.user
+        busSerializer = BusSerializer(data=busData)
+        if busSerializer.is_valid(raise_exception=ValueError):
+            return Response({"status" : "bus created"}, status=status.HTTP_201_CREATED)
+        return Response({"status" : "error creating new driver"}, status=status.HTTP_400_BAD_REQUEST)

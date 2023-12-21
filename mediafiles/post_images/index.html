@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Awesome Homepage</title>
+  <!-- Link to Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+    .jumbotron {
+      background-image: url('https://via.placeholder.com/1600x800'); /* Replace with your background image URL */
+      background-size: cover;
+      color: white;
+      text-align: center;
+      padding: 100px;
+    }
+    .navbar {
+      background-color: #333;
+    }
+    .navbar-brand, .navbar-nav .nav-link {
+      color: white;
+    }
+    .feature {
+      padding: 50px 0;
+      text-align: center;
+    }
+    .feature i {
+      font-size: 3rem;
+      color: #333;
+    }
+    .footer {
+      background-color: #333;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-md">
+    <div class="container">
+      <a class="navbar-brand" href="#">My Website</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Services</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Jumbotron -->
+  <div class="jumbotron">
+    <h1>Welcome to My Awesome Website</h1>
+    <p>This is a simple and stylish homepage created using HTML, CSS, and Bootstrap.</p>
+    <a class="btn btn-primary btn-lg" href="#" role="button">Learn More</a>
+  </div>
+
+  <!-- Features Section -->
+  <div class="feature">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <i class="fas fa-code"></i>
+          <h3>Responsive Design</h3>
+          <p>Our website looks great on any device, whether it's a smartphone, tablet, or desktop.</p>
+        </div>
+        <div class="col-md-4">
+          <i class="fas fa-paint-brush"></i>
+          <h3>Modern UI</h3>
+          <p>Clean and modern user interface that provides a delightful browsing experience.</p>
+        </div>
+        <div class="col-md-4">
+          <i class="fas fa-heart"></i>
+          <h3>Easy to Use</h3>
+          <p>Intuitive navigation and user-friendly interface for a seamless browsing experience.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>&copy; 2023 My Awesome Website. All rights reserved.</p>
+  </div>
+
+  <!-- Link to Bootstrap JS (Optional if you want to use Bootstrap components that require JavaScript) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

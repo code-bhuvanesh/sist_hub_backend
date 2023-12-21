@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import UserRecordView, UserLoginView, AddPosts, GetPosts,login, delete_user
-from .views import UserRecordView, login, delete_user, home, LikeOrUnlikePost, AddPostComments, GetPostComments, GetUserDetials, createAdmin
+from .views import *
+
 
 urlpatterns = [
-    path('', home, name='home'),
+    # path('', home, name='home'),
     path('createadmin/', createAdmin, name='create admin'),
     path('users/', UserRecordView.as_view(), name='users'),
     path("login/", UserLoginView.as_view(), name="login"),
@@ -13,6 +13,8 @@ urlpatterns = [
     path("getposts/", GetPosts.as_view(), name="get_posts"),
     path("addcomments/", AddPostComments.as_view(), name="add_comments"),
     path("getcomments/", GetPostComments.as_view(), name="get_comments"),
-    path("likeunlikepost/", LikeOrUnlikePost.as_view(), name="get_posts")
+    path("likeunlikepost/", LikeOrUnlikePost.as_view(), name="get_posts"),
+    path("createbus/", CreateBus.as_view(), name="add driver")
     # path("login/", Login.as_view(), name="login")
 ]
+

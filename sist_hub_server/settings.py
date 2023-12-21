@@ -29,7 +29,10 @@ SECRET_KEY = 'django-insecure-qm^d10_61$)k0n3_--!dkfbh952z*u#v(^oe1kx%e%n)kyq+c!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["192.168.29.180", '127.0.0.1', '.vercel.app', 'localhost']
+ALLOWED_HOSTS = ["192.168.29.180", "ws://192.168.29.180:8000",'127.0.0.1', '.vercel.app', 'localhost']
+# CORS_ALLOWED_ORIGINS = [
+#     "http://192.168.29.180:8000",
+# ]
 
 #rest framework settings
 
@@ -47,6 +50,7 @@ AUTH_USER_MODEL = 'api.User'
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,6 +60,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'api',
+    'chats',
 ]
 
 
@@ -67,6 +72,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'sist_hub_server.urls'
@@ -88,6 +94,22 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'sist_hub_server.wsgi.application'
+ASGI_APPLICATION = 'sist_hub_server.asgi.application'
+
+# CHANNEL_LAYERS = {
+#     "default" : {
+#         "BACKEND" : 'channels_redis.core.RedisChannelLayer',
+#           "CONFIG": {
+#             "hosts": [("192.168.29.180", 8000)],
+#         },
+#     }
+# }
+
+CHANNEL_LAYERS = {
+    "default" : {
+        "BACKEND" : 'channels.layers.InMemoryChannelLayer',
+    }
+}
 
 
 # Database
