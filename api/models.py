@@ -218,7 +218,11 @@ class WorkShop(models.Model):
 
 
 
+<<<<<<< HEAD
 #models related to BUS
+=======
+#modesls related to BUS
+>>>>>>> ae4c81a8c84902e75efead5aa94c135ac3268030
 
 
 class Location(models.Model):
