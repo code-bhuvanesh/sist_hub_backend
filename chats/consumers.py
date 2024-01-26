@@ -35,10 +35,10 @@ class ChatConsumer(WebsocketConsumer):
             self.channel_name
         )
 
-    def save_messages(self, message, sender, receiver):
+    def save_messages(self, message, sender, receiver) -> Messages:
         sender_user = User.objects.get(id=sender)
         receiver_user = User.objects.get(id=receiver)
-        Messages.objects.create(message=message, sender_user=sender_user, receiver_user=receiver_user).save()
+        return Messages.objects.create(message=message, sender_user=sender_user, receiver_user=receiver_user).save()
 
     def receive(self, text_data):
         print(text_data) 
@@ -47,12 +47,13 @@ class ChatConsumer(WebsocketConsumer):
         sender = text_data_json["sender"]
         receiver = text_data_json["receiver"]
         sender_name = text_data_json["sender_name"]
-        self.save_messages(message, sender, receiver)
+        msg = self.save_messages(message, sender, receiver)
 
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
                 'type' : 'chat_message',
+                'id' : msg.id,
                 'message' : message,
                 'sender' : sender,
                 'receiver' : receiver,

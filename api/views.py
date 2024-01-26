@@ -37,11 +37,7 @@ def home(request):
     #     u.delete()
 
 
-<<<<<<< HEAD
     return HttpResponse("<h1>SIST HUB</h1>")
-=======
-    return HttpResponse("<h1>hello</h1>")
->>>>>>> ae4c81a8c84902e75efead5aa94c135ac3268030
 
 @csrf_exempt
 def createAdmin(request):
